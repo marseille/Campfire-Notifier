@@ -3,6 +3,10 @@ require 'twitter/json_stream'
 require 'json'
 require 'yaml'
 
+#This has escaping issues, all the strings need to be escaped because any apostrophe or quote
+#will break notify-send with an unterminated string literal.
+
+
 # sudo gem install twitter-stream -s http://gemcutter.org
 # http://github.com/voloko/twitter-stream
 config_file = "#{ENV["HOME"]}/.campfirerc"
@@ -48,7 +52,7 @@ EventMachine::run do
             room_name = room_lookup[room_number]
             user = IO.popen("curl -u 5caa15e24a6a838aba12751b252559d093f4e172:X https://aghq.campfirenow.com/users/#{author_id}.json")
             user_name = JSON.parse(user.readlines.first)["user"]["name"]                  
-            system("notify-send --expire-time=100 '#{room_name}: #{user_name}' '#{message_content}'")
+            system("notify-send " + %{"#{room_name}: #{user_name}"} + " " + %{" #{message_content}"})            
           rescue => e
             system("notify-send 'ERROR' '#{e.message.to_s}'")
             p e.message
